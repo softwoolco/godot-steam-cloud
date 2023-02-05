@@ -17,22 +17,22 @@ This is a wrapper to make it simple handling Steam Cloud usage across games. Mad
 #### save(\_filename: String, \_resource: Resource, \_path: String)
 
 Saves your local file to desired path (defaults to _user://_) and then sends its contents under the name `_filename` to the cloud.
-Calls back `save_finished` on success and `save_failed` on fail.
+Calls back [`save_finished`](#save_finished) on success and [`save_failed`](#save_failedremote-bool) on fail.
 
 #### load(\_filename: String, \_path: String)
 
 Loads both the local file from desired path (defaults to _user://_).
-On error calls `load_failed`.
+On error calls [`load_failed`](#load_failedremote-bool).
 
-On success it returns `loaded_with_conflicts`, so you can check both the remote file and local one if you need to handle conflicts to keep them in sync.
+On success it returns [`loaded_with_conflicts`](#loaded_with_conflictsremote-resource-local-resource), so you can check both the remote file and local one if you need to handle conflicts to keep them in sync.
 
-If there's no conflicts and there's only a remote file (e.g.: When the player first plays the game _on a new device_), it calls `load_finished`.
+If there's no conflicts and there's only a remote file (e.g.: When the player first plays the game _on a new device_), it calls [`load_finished`](#load_finishedcontents-resource).
 
 _I need to improve this API._
 
 ### Signals
 
-#### save_finished()
+#### `save_finished()`
 
 Emitted when your save is finished. You can use it to remove a "Save in Progress" view, for instance.
 

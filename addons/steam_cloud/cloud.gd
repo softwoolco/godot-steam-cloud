@@ -57,8 +57,16 @@ func _on_file_read_async_completed(_remote_file: Dictionary) -> void:
     var _file_contents: String
     var _resource: Resource
 
+    if _remote_file.has("result") and _remote_file.result != Steam.RESULT_OK:
+        var _result: int = _remote_file.result
+        push_error("[SteamCloud] Async Read Error %s. Check %s for further information." % [_result, "https://partner.steamgames.com/doc/api/steam_api#EResult"])
+        emit_signal("load_failed", true)
+        return
+
     if _remote_file.has("buffer"):
         _file_contents = _remote_file.buffer.get_string_from_utf8()
+    
+    print(_remote_file)
     
     var _file := File.new()
     _file.open(cached_file_path + cached_file_name, File.WRITE)

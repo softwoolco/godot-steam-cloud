@@ -1,11 +1,11 @@
 extends Node
 
-signal save_finished()
-signal save_failed(remote)
+signal save_finished
+signal save_failed(is_remote)
 
-signal loaded_with_conflicts(remote, local)
+signal loaded_with_conflicts(remote_resource, local_resource)
 signal load_finished(contents)
-signal load_failed(remote)
+signal load_failed(is_remote)
 
 const DEFAULT_SAVE_PATH := "user://"
 
@@ -73,6 +73,8 @@ func _on_file_read_async_completed(_remote_file: Dictionary) -> void:
         return
     elif not _file_contents.empty():
         emit_signal("load_finished", _resource)
+    elif last_local_resource:
+        emit_signal("load_finished", last_local_resource)
     
 
 func load_local(_filename: String, _path: String = DEFAULT_SAVE_PATH) -> Resource:

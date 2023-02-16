@@ -41,9 +41,10 @@ Emitted when your save is finished. You can use it to remove a "Save in Progress
 Emitted when there's an error during the file saving.
 Remote: whether the error was when saving the remote file (to Steam Remote Storage) or local one.
 
-#### `loaded_with_conflicts(remote: Resource, local: Resource)`
+#### `loaded_with_conflicts(remote: Resource, local: Resource, filename: String)`
 
 Emitted when there's both a remote and local files, so you can handle any reconciliations if needed to guarantee the player doesn't have any rollback into their progress.
+`filename` is meant to be used as a way to handle multiple different files being saved if you need.
 
 #### `load_finished(contents: Resource)`
 
@@ -51,6 +52,8 @@ Emitted when the load is done in two cases:
 
 - There's only the remote file;
 - There's only the local file (this shouldn't happen at all, if this is happening, there's something wrong in your implementation)
+
+`filename` is meant to be used as a way to handle multiple different files being saved if you need.
 
 #### `load_failed(remote: bool)`
 

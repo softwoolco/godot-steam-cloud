@@ -3,8 +3,8 @@ extends Node
 signal save_finished
 signal save_failed(is_remote)
 
-signal loaded_with_conflicts(remote_resource, local_resource)
-signal load_finished(contents)
+signal loaded_with_conflicts(remote_data, local_data, filename)
+signal load_finished(contents, filename)
 signal load_failed(is_remote)
 
 const DEFAULT_SAVE_PATH := "user://"
@@ -48,7 +48,7 @@ func _on_file_write_async_completed(_result: int) -> void:
         emit_signal("save_failed", true)
         push_error("[SteamCloud] Async Write Error %s. Check %s for further information." % [_result, "https://partner.steamgames.com/doc/api/steam_api#EResult"])
         return
-    
+
     Steam.endFileWriteBatch()
     emit_signal("save_finished")
 
@@ -65,9 +65,7 @@ func _on_file_read_async_completed(_remote_file: Dictionary) -> void:
 
     if _remote_file.has("buffer"):
         _file_contents = _remote_file.buffer.get_string_from_utf8()
-    
-    print(_remote_file)
-    
+        
     var _file := File.new()
     _file.open(cached_file_path + cached_file_name, File.WRITE)
     _file.store_string(_file_contents)
@@ -76,14 +74,14 @@ func _on_file_read_async_completed(_remote_file: Dictionary) -> void:
     _resource = ResourceLoader.load(cached_file_path + cached_file_name)
 
     if not _file_contents.empty() and last_local_resource:
-        emit_signal("loaded_with_conflicts", _resource, last_local_resource)
+        emit_signal("loaded_with_conflicts", _resource, last_local_resource, cached_file_name)
         last_local_resource = null
         return
     elif not _file_contents.empty():
-        emit_signal("load_finished", _resource)
+        emit_signal("load_finished", _resource, cached_file_name)
     elif last_local_resource:
-        emit_signal("load_finished", last_local_resource)
-    
+        emit_signal("load_finished", last_local_resource, cached_file_name)
+
 
 func load_local(_filename: String, _path: String = DEFAULT_SAVE_PATH) -> Resource:
     var _file := ResourceLoader.load(_path + _filename)
@@ -103,6 +101,6 @@ func load(_filename: String, _path: String = DEFAULT_SAVE_PATH) -> void:
     if Steam.fileExists(_filename):
         load_remote_async(_filename)
         return
-    
+
     emit_signal("load_finished", last_local_resource.duplicate())
     last_local_resource = null

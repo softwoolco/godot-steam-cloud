@@ -102,5 +102,5 @@ func load(_filename: String, _path: String = DEFAULT_SAVE_PATH) -> void:
         load_remote_async(_filename)
         return
 
-    emit_signal("load_finished", last_local_resource.duplicate())
+    emit_signal("load_finished", last_local_resource.duplicate(), _filename)
     last_local_resource = null
